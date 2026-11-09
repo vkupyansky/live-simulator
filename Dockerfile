@@ -57,7 +57,8 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 
 FROM caddy:2.11.9-alpine@sha256:0bbb055bda6793c999bde78b1b5ce3e89f829fb031af2cf50056ea1246559fee AS frontend-runtime
 COPY --from=caddy-build /usr/bin/caddy /usr/bin/caddy
-RUN apk del --no-cache curl libcap \
+RUN setcap -r /usr/bin/caddy \
+    && apk del --no-cache curl libcap \
     && addgroup -g 10001 caddy \
     && adduser -D -u 10001 -G caddy caddy \
     && mkdir -p /srv /data /config /tmp/caddy \

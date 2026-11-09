@@ -21,6 +21,10 @@ jobs:
       - name: Build verified production images
         id: build
         run: docker compose -f compose.build.yaml build --pull
+      - name: Validate restricted frontend runtime
+        run: >-
+          docker compose -f compose.build.yaml run --rm --no-deps --cap-drop ALL
+          --entrypoint caddy app validate --config /etc/caddy/Caddyfile --adapter caddyfile
       - name: Scan frontend image
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
