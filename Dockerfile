@@ -30,7 +30,7 @@ ENV NODE_ENV=production
 RUN pnpm api:build
 RUN pnpm --filter @live/api deploy --prod /runtime
 
-FROM mcr.microsoft.com/playwright:v1.61.1-noble@sha256:5b8f294aff9041b7191c34a4bab3ac270157a28774d4b0660e9743297b697e48 AS verifier
+FROM mcr.microsoft.com/playwright:v1.65.0-noble@sha256:6e3fb709361521eb27161606e6da6d2674e5e89fa16516cb37d6fdd91372273d AS verifier
 COPY --from=node-base /usr/local /usr/local
 ENV PNPM_HOME=/pnpm
 ENV PATH=/pnpm:$PATH
