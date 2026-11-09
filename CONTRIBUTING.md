@@ -9,17 +9,6 @@
 5. Фиксируйте версии точно и обновляйте `pnpm-lock.yaml` осознанно.
 6. Не добавляйте `.env`, media пользователя, логи, отчёты и provider payloads.
 
-Development-сервер не поддерживается. Каноническая проверка выполняется production build:
-
-```bash
-docker compose -f compose.build.yaml config --quiet
-docker compose -f compose.build.yaml build --pull
-```
-
-Build запускает Prettier check, ESLint с `--max-warnings 0`, строгий TypeScript, unit/component/API tests, production audit и обе production-сборки. E2E запускается отдельно против обязательного `E2E_BASE_URL` уже развёрнутого приложения:
-
-```bash
-docker compose -f compose.yaml -f compose.verify.yaml run --rm e2e
-```
+Development-сервер не поддерживается. Канонические команды production-сборки и E2E находятся в [тестировании](docs/testing.md); конфигурация URL и внешних сервисов описана в [развёртывании](docs/deployment.md).
 
 UI-изменения должны проходить WebKit при viewport 430 × 932. Не обновляйте visual snapshot, если изменение не относится к соответствующему экрану.

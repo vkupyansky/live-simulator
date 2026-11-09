@@ -1,41 +1,26 @@
 # Текущее состояние
 
-Дата: 2026-11-09
-
 ## Реализовано
 
-- production-only PWA с камерой и локальным видео;
-- device-local настройки и media в IndexedDB;
-- ограниченные viewer, like, reaction и comment engines;
-- streaming speech через Deepgram;
-- Mistral context/vision и structured comment generation;
-- точные host/viewer и редкие viewer/viewer диалоги;
-- conservative visual grounding с подтверждением на следующем кадре;
-- одноразовые topic/question intents и очистка предыдущей темы;
-- domain validation визуальных, аудио и повторяющихся утверждений;
-- bounded backoff без остановки live session;
-- offline app shell, iOS safe-area и WebKit E2E;
-- production Docker images для frontend и API.
+- Production-only PWA с камерой и локальным видео, настройками и media в IndexedDB устройства.
+- Локальные движки зрителей, лайков, реакций и комментариев с ограниченными очередями.
+- Потоковое распознавание Deepgram, анализ контекста и кадров Mistral.
+- Адресованные диалоги ведущего и зрителей, редкие диалоги между зрителями.
+- Подтверждение визуального наблюдения на следующем кадре, одноразовые приглашения к вопросам и очистка предыдущей темы.
+- Предметная проверка визуальных, аудио и повторяющихся утверждений, ограниченное восстановление после сбоев.
+- Офлайн-оболочка, safe area iOS, WebKit E2E и production-образы frontend/API.
 
-## Проверки release-кандидата
+## Проверки
 
-- build и runtime Compose config: успешно;
-- обе production image build: успешно;
-- Prettier, ESLint без warnings, frontend/API TypeScript: успешно;
-- unit/component/API tests: 181 из 181 успешно;
-- production dependency audit: известных уязвимостей нет;
-- Trivy для обоих образов: исправляемых HIGH/CRITICAL не найдено;
-- Caddy configuration validation и проверка состава frontend runtime: успешно;
-- Gitleaks и проверка состава Git: утечек не обнаружено.
+Контур включает проверку Compose, production-сборки обоих образов, Prettier, ESLint без предупреждений, строгие типы frontend/API, unit/component/API-тесты и аудит зависимостей. CI дополнительно проверяет конфигурацию Caddy, состав frontend runtime и исправляемые HIGH/CRITICAL в образах через Trivy.
 
-Подготовка репозитория не изменяет работающее серверное развёртывание. Production health, реальные Mistral smoke и Playwright против сервера в этом проходе повторно не запускались. Они выполняются отдельными командами из README и требуют настроенного production URL.
+Изолированный контур сборки, тестов, зависимостей и образов пройден. Это не подтверждает доступность работающего production URL и внешних провайдеров. Health, Playwright против сервера и реальные Mistral smoke требуют отдельного запуска с настроенным адресом и ключами. Команды описаны в [тестировании](docs/testing.md).
 
 ## Ограничения
 
-- cloud-функции требуют сети и действующих Mistral/Deepgram credentials;
-- API не имеет пользовательской аутентификации;
-- система не измеряет качество аудио и не может оценивать микрофон;
-- Flux не выполняет speaker diarization;
-- vision намеренно возвращает неопределённость вместо догадки;
-- встроенного экспорта IndexedDB нет;
+- Облачные функции требуют сети и действующих ключей Mistral/Deepgram.
+- API не имеет пользовательской аутентификации; доступ к провайдерской квоте ограничивается внешним proxy.
+- Система не измеряет качество аудио и не оценивает микрофон; Flux не разделяет говорящих.
+- Анализ кадра сохраняет неопределённость при недостаточных наблюдениях.
+- Встроенного экспорта IndexedDB нет; очистка сайта удаляет сохранённый профиль и media.
 - TLS и HSTS обеспечивает внешний Nginx.

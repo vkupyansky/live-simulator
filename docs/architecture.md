@@ -48,4 +48,4 @@ Topic reset увеличивает `topicResetSequence` и атомарно оч
 
 Service worker precache содержит только app shell. Хешированные assets имеют immutable cache, а HTML, manifest и service worker не имеют. Пользовательские media, IndexedDB и provider payloads не попадают в HTTP cache.
 
-Кадры, аудио, transcript, semantic context, persona runtime и комментарии существуют только во время обработки. API их не сохраняет. Подробные лимиты и durable schema описаны в [DATA_MODEL.md](DATA_MODEL.md).
+Кадры, аудио, transcript, semantic context, persona runtime и комментарии существуют только во время обработки. API их не сохраняет. Подробные лимиты и durable schema описаны в [модели данных](data-model.md).

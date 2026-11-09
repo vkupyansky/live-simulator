@@ -12,4 +12,4 @@
 
 Сопровождающие проекта могут редактировать или отклонять вклад и временно или постоянно ограничивать участие при нарушении правил. Инциденты сообщаются через приватный канал из [SECURITY.md](SECURITY.md); конфиденциальность автора обращения должна сохраняться.
 
-Документ основан на Contributor Covenant 2.1: https://www.contributor-covenant.org/version/2/1/code_of_conduct.html.
+Документ основан на [Contributor Covenant 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct.html).
