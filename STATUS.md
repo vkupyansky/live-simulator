@@ -24,6 +24,8 @@
 - Prettier, ESLint без warnings, frontend/API TypeScript: успешно;
 - unit/component/API tests: 181 из 181 успешно;
 - production dependency audit: известных уязвимостей нет;
+- Trivy для обоих образов: исправляемых HIGH/CRITICAL не найдено;
+- Caddy configuration validation и проверка состава frontend runtime: успешно;
 - Gitleaks и проверка состава Git: утечек не обнаружено.
 
 Подготовка репозитория не изменяет работающее серверное развёртывание. Production health, реальные Mistral smoke и Playwright против сервера в этом проходе повторно не запускались. Они выполняются отдельными командами из README и требуют настроенного production URL.

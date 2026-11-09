@@ -1,6 +1,11 @@
 # syntax=docker/dockerfile:1.24.0@sha256:87999aa3d42bdc6bea60565083ee17e86d1f3339802f543c0d03998580f9cb89
 
-FROM node:24.18.0-trixie-slim@sha256:ae91dcc111a68c9d2d81ff2a17bda61be126426176fde6fe7d08ab13b7f50573 AS node-base
+FROM node:24.22.2-trixie-slim@sha256:0820eaa85e07d0490446dd01d14707e17e6108a36988cf374899cd057eb3812d AS node-os
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends zlib1g=1:1.3.dfsg+really1.3.1-1+deb13u1 \
+    && rm -rf /var/lib/apt/lists/*
+
+FROM node-os AS node-base
 ENV PNPM_HOME=/pnpm
 ENV PATH=/pnpm:$PATH
 RUN npm install --global pnpm@11.13.1
@@ -44,9 +49,15 @@ USER pwuser
 ENTRYPOINT ["pnpm"]
 CMD ["e2e"]
 
-FROM caddy:2.11.4-alpine@sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648 AS frontend-runtime
-RUN setcap -r /usr/bin/caddy \
-    && apk del --no-cache curl libcap \
+FROM caddy:2.11.9-builder-alpine@sha256:d26fbc8a56ed8c3c1534f5573162d148ad3ed41732665da8526eb181fac0b728 AS caddy-build
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    xcaddy build v2.11.9 --output /usr/bin/caddy \
+    --replace golang.org/x/net=golang.org/x/net@v0.62.0
+
+FROM caddy:2.11.9-alpine@sha256:0bbb055bda6793c999bde78b1b5ce3e89f829fb031af2cf50056ea1246559fee AS frontend-runtime
+COPY --from=caddy-build /usr/bin/caddy /usr/bin/caddy
+RUN apk del --no-cache curl libcap \
     && addgroup -g 10001 caddy \
     && adduser -D -u 10001 -G caddy caddy \
     && mkdir -p /srv /data /config /tmp/caddy \
@@ -59,7 +70,7 @@ EXPOSE 8080
 STOPSIGNAL SIGTERM
 CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
 
-FROM node:24.18.0-trixie-slim@sha256:ae91dcc111a68c9d2d81ff2a17bda61be126426176fde6fe7d08ab13b7f50573 AS api-runtime
+FROM node-os AS api-runtime
 ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=api-build --chown=node:node /runtime ./
