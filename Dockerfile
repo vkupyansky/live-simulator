@@ -44,7 +44,7 @@ USER pwuser
 ENTRYPOINT ["pnpm"]
 CMD ["e2e"]
 
-FROM caddy:2.11.4-alpine@sha256:5f5c8640aae01df9654968d946d8f1a56c497f1dd5c5cda4cf95ab7c14d58648 AS frontend-runtime
+FROM caddy:2.11.8-alpine@sha256:f6228111e5fafa1a5238258d0858e103f10599b8d1659a146e7726681a002bb9 AS frontend-runtime
 RUN setcap -r /usr/bin/caddy \
     && apk del --no-cache curl libcap \
     && addgroup -g 10001 caddy \
