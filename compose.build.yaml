@@ -1,0 +1,14 @@
+services:
+  api:
+    image: tiktok-live-simulator-api:1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api-runtime
+
+  app:
+    image: tiktok-live-simulator:1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend-runtime

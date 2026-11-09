@@ -1,0 +1,22 @@
+services:
+  e2e:
+    image: tiktok-live-simulator-verifier:1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: verifier
+    environment:
+      E2E_BASE_URL: ${E2E_BASE_URL:?E2E_BASE_URL is required}
+    networks:
+      - edge
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=1g,mode=1777
+      - /artifacts:size=768m,mode=1777
+      - /workspace/node_modules/.vite-temp:size=64m,uid=1001,gid=1001,mode=0755
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    restart: 'no'
