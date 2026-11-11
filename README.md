@@ -1,27 +1,29 @@
+[![Русский](https://img.shields.io/badge/%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9-181717?style=for-the-badge)](README.ru.md)
+
 # Live Simulator
 
-Симулятор вертикального прямого эфира. Показывает камеру или локальное видео, моделирует зрителей, лайки и реакции, распознаёт речь ведущего и создаёт контекстные комментарии.
+A vertical livestream simulator. Displays a camera feed or local video, simulates viewers, likes, and reactions, recognizes the host's speech, and creates contextual comments.
 
-## Возможности
+## Features
 
-- Камера или выбранное видео в мобильном live-интерфейсе.
-- Настройки, аватар и видео сохраняются в браузере текущего устройства.
-- Локальная аудитория со зрителями, реакциями, авторами и диалогами.
-- Распознавание речи через Deepgram и комментарии с анализом кадра через Mistral.
-- Подтверждение визуального наблюдения на следующем свежем кадре.
-- Устанавливаемая PWA и доступная офлайн оболочка приложения.
+- A camera feed or selected video in a mobile livestream interface.
+- Settings, an avatar, and video saved in the current device's browser.
+- A local audience with viewers, reactions, authors, and conversations.
+- Speech recognition through Deepgram and comments with frame analysis through Mistral.
+- Visual observations confirmed using the next fresh frame.
+- An installable PWA with an offline application shell.
 
-Экран подготовки эфира:
+Broadcast setup screen:
 
-![Настройка ведущего, источника видео, числа зрителей и активности](tests/e2e/app.spec.ts-snapshots/broadcast-setup-main-webkit-iphone-linux.png)
+![Host, video source, viewer count, and activity settings](tests/e2e/app.spec.ts-snapshots/broadcast-setup-main-webkit-iphone-linux.png)
 
-## Установка и запуск
+## Installation and startup
 
-Нужны Docker с Compose v2 и BuildKit, домен, внешний HTTPS reverse proxy и собственные ключи Mistral/Deepgram. Контейнер API должен иметь доступ к HTTPS/WSS провайдеров.
+Requires Docker with Compose v2 and BuildKit, a domain, an external HTTPS reverse proxy, and your own Mistral/Deepgram keys. The API container needs HTTPS/WSS access to the providers.
 
-Поддерживается только production-сборка. Development-сервер, HMR, bind mounts и development Compose-профиль не предусмотрены. Версии инструментов закреплены в [package.json](package.json), [lock-файле](pnpm-lock.yaml) и [Dockerfile](Dockerfile).
+Only the production build is supported. No development server, HMR, bind mounts, or development Compose profile is provided. Tool versions are pinned in [package.json](package.json), the [lockfile](pnpm-lock.yaml), and [Dockerfile](Dockerfile).
 
-Скопируйте [.env.example](.env.example) в `.env` и заполните runtime-значения. Полный контракт, домен, TLS и WebSocket описаны в [развёртывании](docs/deployment.md). Ключи должны оставаться только у API, без попадания в Git, сборку и браузер.
+Copy [.env.example](.env.example) to `.env` and fill in the runtime values. The full contract, domain, TLS, and WebSocket setup are described in the [deployment guide](docs/deployment.md) (in Russian). Keys must remain with the API and stay out of Git, builds, and the browser.
 
 ```bash
 docker compose -f compose.build.yaml config --quiet
@@ -30,48 +32,50 @@ docker compose config --quiet
 docker compose up -d --force-recreate --remove-orphans
 ```
 
-Приложение публикуется на `127.0.0.1:18080`. Откройте настроенный HTTPS-домен после подключения внешнего Nginx. Остановка сохраняет named volumes:
+The application is published at `127.0.0.1:18080`. Open the configured HTTPS domain after connecting the external Nginx. Stopping preserves named volumes:
 
 ```bash
 docker compose down
 ```
 
-## Использование
+## Usage
 
-1. Задайте имя и аватар ведущего, выберите камеру или видео.
-2. Укажите число зрителей и активность; при необходимости включите учёт речи.
-3. Начните эфир. Просьба задавать вопросы создаёт одну ограниченную пачку из двух или трёх вопросов.
-4. Для установки на iPhone откройте HTTPS-страницу в Safari и выберите **Поделиться**, затем **На экран "Домой"**.
+1. Set the host's name and avatar, then choose the camera or a video.
+2. Set the viewer count and activity; enable speech awareness if needed.
+3. Start the broadcast. Asking viewers for questions creates one bounded batch of two or three questions.
+4. To install on an iPhone, open the HTTPS page in Safari and choose **Share**, then **Add to Home Screen**.
 
-Ответ ведущего связывается со зрителем только при однозначной адресации. Первое визуальное наблюдение остаётся предположением до подтверждения на следующем кадре. Приложение не угадывает плохо видимые предметы.
+The host's reply is linked to a viewer only when the intended recipient is unambiguous. An initial visual observation remains a hypothesis until confirmed in the next frame. The application does not guess poorly visible objects.
 
-## Проверки
+## Checks
 
-Основной изолированный контур выполняется при production-сборке:
+The main isolated checks run as part of the production build:
 
 ```bash
 docker compose -f compose.build.yaml build --pull
 ```
 
-Сборка проверяет форматирование, ESLint без предупреждений, строгие типы, unit/component/API-тесты, зависимости и оба production-образа. Браузерные проверки и реальные smoke выполняются отдельно по [инструкции тестирования](docs/testing.md); smoke обращаются к Mistral и расходуют квоту.
+The build checks formatting, ESLint with no warnings, strict types, unit/component/API tests, dependencies, and both production images. Browser checks and real smoke tests run separately as described in the [testing guide](docs/testing.md) (in Russian); smoke tests call Mistral and consume quota.
 
-## Ограничения
+## Limitations
 
-У API нет пользовательской аутентификации. Same-origin и rate limit не определяют владельца запроса. Если открытый расход провайдерской квоты недопустим, ограничьте доступ на внешнем reverse proxy.
+The API has no user authentication. Same-origin checks and rate limiting do not identify the request owner. If open consumption of provider quota is unacceptable, restrict access at the external reverse proxy.
 
-Аватар, профиль и видео находятся в IndexedDB текущей пары браузер/origin. Встроенного экспорта нет; очистка данных сайта необратимо удалит их. API не сохраняет кадры, PCM-аудио, расшифровки, контекст и комментарии. Кадры и ограниченный контекст передаются Mistral, аудио передаётся Deepgram.
+The avatar, profile, and video are stored in IndexedDB for the current browser/origin pair. There is no built-in export; clearing site data permanently deletes them. The API does not store frames, PCM audio, transcripts, context, or comments. Frames and bounded context are sent to Mistral; audio is sent to Deepgram.
 
-Система не измеряет качество аудио и не оценивает исправность микрофона. Deepgram Flux не выполняет разделение говорящих. Офлайн доступна оболочка; распознавание, анализ кадра и генерация требуют сети и действующих ключей.
+The system does not measure audio quality or assess whether the microphone works correctly. Deepgram Flux does not separate speakers. The application shell is available offline; recognition, frame analysis, and generation require a network connection and valid keys.
 
-## Документация
+## Documentation
 
-- [Архитектура](docs/architecture.md) и [модель данных](docs/data-model.md)
-- [Развёртывание](docs/deployment.md) и [тестирование](docs/testing.md)
-- [Текущее состояние](STATUS.md)
-- [Участие в разработке](CONTRIBUTING.md), [безопасность](SECURITY.md) и [кодекс поведения](CODE_OF_CONDUCT.md)
+The following documents are in Russian:
 
-## Лицензия
+- [Architecture](docs/architecture.md) and [data model](docs/data-model.md)
+- [Deployment](docs/deployment.md) and [testing](docs/testing.md)
+- [Current state](STATUS.md)
+- [Contributing](CONTRIBUTING.md), [security](SECURITY.md), and [code of conduct](CODE_OF_CONDUCT.md)
 
-Код распространяется по [MIT License](LICENSE). Портреты в `src/assets/personas/portraits` используются по отдельному разрешению и не перелицензируются по MIT; источники перечислены в [LICENSES.json](src/assets/personas/LICENSES.json).
+## License
 
-Проект не связан с TikTok. TikTok и связанные обозначения принадлежат соответствующим правообладателям.
+The code is distributed under the [MIT License](LICENSE). Portraits in `src/assets/personas/portraits` are used with separate permission and are not relicensed under MIT; sources are listed in [LICENSES.json](src/assets/personas/LICENSES.json).
+
+The project is not affiliated with TikTok. TikTok and related marks belong to their respective owners.
